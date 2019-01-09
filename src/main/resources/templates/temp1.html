@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+
+    <style>
+        /*解决html转pdf文件中文不显示的问题*/
+        body {
+            font-family: SimSun;
+        }
+
+        /*设定纸张大小*/
+        /* A4纸 */
+        /* @page{size:210mm*297mm} */
+        @page{size:a4}
+
+        p {
+            color: red;
+        }
+    </style>
+</head>
+<body >
+<div style="height:1000px;">
+    测试内容
+</div>
+
+<ul>
+    <li th:each="u : ${users}">
+        <span style="display:inline-block;" th:text="${u.name}"></span>
+        <span style="display:inline-block;" th:text="${u.age}"></span>
+        <span style="display:inline-block;" th:text="${u.phone}"></span>
+    </li>
+</ul>
+
+<div style=" height:1000px;">
+    测试内容
+</div>
+
+<div style=" height:1000px;">
+    测试内容
+</div>
+
+<div style="width: 800px;height:1000px;">
+    测试内容
+</div>
+
+<div style="width: 800px;height:1000px;">
+    测试内容
+</div>
+</body>
+</html>

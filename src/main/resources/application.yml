@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: image-service
+  rabbitmq:
+    host: 118.25.58.79
+    username: admin
+    password: admin
+    publisher-confirms: true
+server:
+  port: 8081
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+
