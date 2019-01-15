@@ -6,10 +6,12 @@ import com.mslife.proposal.image.util.ItextUtil;
 import com.mslife.proposal.image.util.Pdf2ImgUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.util.FastStringWriter;
+
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +22,9 @@ import java.util.UUID;
 public class ProposalServiceImpl implements ProposalService {
 
     private final Logger logger = LoggerFactory.getLogger(ProposalServiceImpl.class);
+
+    @Value("${pdfpath}")
+    private String pdfPath;
 
     @Resource
     TemplateEngine templateEngine;
@@ -36,10 +41,10 @@ public class ProposalServiceImpl implements ProposalService {
         //渲染模板
         //String filepath = "d:\\proposal\\"+uuid;
 
-        String filepath = "/home/allen/proposal/"+uuid;
+        String filepath = pdfPath + uuid;
 
         File dir = new File(filepath);
-        if(!dir.exists()){
+        if (!dir.exists()) {
             dir.mkdirs();
         }
 
@@ -51,22 +56,22 @@ public class ProposalServiceImpl implements ProposalService {
         templateEngine.process("temp", context, fastStringWriter);
 
         Long t2 = System.currentTimeMillis();
-        logger.info("生成html时间-------------------------"+String.valueOf(t2-t1));
+        logger.info("生成html时间-------------------------" + String.valueOf(t2 - t1));
 
         ItextUtil.html2Pdf(fastStringWriter.toString(), pdfPath);
 
         Long t3 = System.currentTimeMillis();
-        logger.info("html字符串转pdf时间-----------"+String.valueOf(t3-t2));
+        logger.info("html字符串转pdf时间-----------" + String.valueOf(t3 - t2));
 
         Pdf2ImgUtil.pdfPage2Gif(pdfPath);
 
         Long t4 = System.currentTimeMillis();
-        logger.info("pdf转gif时间-----------"+String.valueOf(t4-t3));
+        logger.info("pdf转gif时间-----------" + String.valueOf(t4 - t3));
 
         Pdf2ImgUtil.pdf2MultiTiff(pdfPath);
 
         Long t5 = System.currentTimeMillis();
-        logger.info("pdf转tif时间-----------"+String.valueOf(t5-t4));
+        logger.info("pdf转tif时间-----------" + String.valueOf(t5 - t4));
 
         return filepath;
     }

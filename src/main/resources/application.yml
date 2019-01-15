@@ -22,4 +22,4 @@ logging:
   level:
     root: info
 
-pdf-path: /home/allen/proposal/
+pdfpath: /home/allen/proposal/

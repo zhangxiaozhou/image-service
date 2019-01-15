@@ -32,6 +32,8 @@ public class ProposalImageReceiver {
     ))
     public void process(@Payload User user, Channel channel, @Headers Map<String,Object> headers) throws IOException {
 
+        channel.basicQos(1);
+
         logger.info("Receiver  : " + user);
 
         proposalService.genPdfFromUser(user);

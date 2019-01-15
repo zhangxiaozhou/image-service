@@ -23,8 +23,8 @@ public class RabbitConfiguration {
 
         factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
 
-        factory.setConcurrentConsumers(8);
-        factory.setMaxConcurrentConsumers(8);
+        factory.setConcurrentConsumers(4);
+        factory.setMaxConcurrentConsumers(4);
         return factory;
     }
 }
