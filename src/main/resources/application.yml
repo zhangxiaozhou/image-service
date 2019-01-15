@@ -21,3 +21,5 @@ eureka:
 logging:
   level:
     root: info
+
+pdf-path: /home/allen/proposal/
