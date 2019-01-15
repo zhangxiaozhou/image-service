@@ -3,25 +3,26 @@ package com.mslife.proposal.image.service.impl;
 import com.mslife.proposal.image.dto.User;
 import com.mslife.proposal.image.service.ProposalService;
 import com.mslife.proposal.image.util.ItextUtil;
-import com.mslife.proposal.image.util.Pdf2TiffUtil;
+import com.mslife.proposal.image.util.Pdf2ImgUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.util.FastStringWriter;
 import javax.annotation.Resource;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Random;
+import java.util.UUID;
 
 @Service
 public class ProposalServiceImpl implements ProposalService {
 
+    private final Logger logger = LoggerFactory.getLogger(ProposalServiceImpl.class);
+
     @Resource
     TemplateEngine templateEngine;
-
-    private Random random = new Random(10000);
 
     @Override
     public String genPdfFromUser(User user) throws IOException {
@@ -30,29 +31,42 @@ public class ProposalServiceImpl implements ProposalService {
         Context context = new Context();
         context.setVariable("users", Arrays.asList(new User[]{user}));
 
+        UUID uuid = UUID.randomUUID();
+
         //渲染模板
-        String filename = "user" + random.nextLong();
-        String filepath = "d:\\proposal-image\\"+filename;
+        //String filepath = "d:\\proposal\\"+uuid;
 
-        String htmlPath = filepath + ".html";
-        String pdfPath = filepath + ".pdf";
-        String tiffPath = filepath + ".tif";
+        String filepath = "/home/allen/proposal/"+uuid;
 
-        FileWriter write = new FileWriter(htmlPath);
-        templateEngine.process("temp1", context, write);
+        File dir = new File(filepath);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
 
-        write.close();
+        String pdfPath = filepath + File.separator + uuid + ".pdf";
 
-        ItextUtil.html2Pdf(htmlPath, pdfPath);
+        Long t1 = System.currentTimeMillis();
 
-        //pdf转tif
-        FileInputStream fis = new FileInputStream(pdfPath);
-        FileOutputStream fos = new FileOutputStream(tiffPath);
+        FastStringWriter fastStringWriter = new FastStringWriter();
+        templateEngine.process("temp", context, fastStringWriter);
 
-        Pdf2TiffUtil.pdf2Tiff(fis, fos);
+        Long t2 = System.currentTimeMillis();
+        logger.info("生成html时间-------------------------"+String.valueOf(t2-t1));
 
-        fos.close();
-        fis.close();
+        ItextUtil.html2Pdf(fastStringWriter.toString(), pdfPath);
+
+        Long t3 = System.currentTimeMillis();
+        logger.info("html字符串转pdf时间-----------"+String.valueOf(t3-t2));
+
+        Pdf2ImgUtil.pdfPage2Gif(pdfPath);
+
+        Long t4 = System.currentTimeMillis();
+        logger.info("pdf转gif时间-----------"+String.valueOf(t4-t3));
+
+        Pdf2ImgUtil.pdf2MultiTiff(pdfPath);
+
+        Long t5 = System.currentTimeMillis();
+        logger.info("pdf转tif时间-----------"+String.valueOf(t5-t4));
 
         return filepath;
     }
